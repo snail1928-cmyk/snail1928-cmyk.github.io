@@ -270,12 +270,26 @@
     <button class="filter-btn" onclick="filterApps('web', this)">Web</button>
     <button class="filter-btn" onclick="filterApps('mobile', this)">Mobile</button>
     <button class="filter-btn" onclick="filterApps('desktop', this)">Desktop</button>
+    <button class="filter-btn" onclick="filterApps('game', this)">Game</button>
   </div>
 
   <!-- APPS GRID -->
   <section id="apps" class="apps-grid">
 
     <!-- ✏️ EDIT: Copy and paste a new app-card block for each app you add -->
+
+    <div class="app-card" data-type="game">
+      <div class="card-top">
+        <div class="app-icon">🚗</div>
+        <span class="badge game">Game</span>
+      </div>
+      <div class="app-name">Road to Busan</div>
+      <div class="app-desc">A turn-based first-person driving prototype. Designed around readable NPC behavior, lane-planning decisions, and QA-focused crash replay tools.</div>
+      <div class="card-links">
+        <a href="road-to-busan/" class="btn btn-primary">Play Game ↗</a>
+        <a href="https://github.com/snail1928-cmyk/snail1928-cmyk.github.io/tree/main/road-to-busan" class="btn btn-ghost" target="_blank">Source</a>
+      </div>
+    </div>
 
     <!-- Example App 1 -->
     <div class="app-card" data-type="web">
