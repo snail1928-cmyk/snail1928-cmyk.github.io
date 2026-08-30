@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Road to Busan — Prototype 0.01</title>
+    <link rel="stylesheet" href="styles.css?v=43" />
+  </head>
+  <body>
+    <main class="game-shell" aria-label="Road to Busan prototype">
+      <section class="main-menu" id="main-menu" aria-labelledby="menu-title">
+        <div class="main-menu__intro">
+          <p>OPENAI GAME BUILDERS SEOUL</p>
+          <h1 id="menu-title">ROAD TO<br><span>BUSAN</span></h1>
+          <p class="main-menu__tagline">Read the road. Choose your lane. Reach Busan.</p>
+          <button id="start-game" type="button">Start game <kbd>Enter</kbd></button>
+          <small>Seven actions · 5 seconds per turn · exits open two turns early</small>
+        </div>
+        <aside class="local-leaderboard" aria-labelledby="leaderboard-title">
+          <div class="local-leaderboard__head"><h2 id="leaderboard-title">LOCAL RUN LOG</h2><div><span>saved on this device</span><button id="clear-run-log" type="button">Clear log</button></div></div>
+          <div id="leaderboard-list" class="local-leaderboard__list"></div>
+        </aside>
+      </section>
+      <section class="road-view" aria-label="Road ahead">
+        <canvas id="driving-canvas" aria-label="3D first-person driving view"></canvas>
+        <div class="skyline skyline-left"></div>
+        <div class="skyline skyline-right"></div>
+        <div class="destination">BUSAN <span>438 km</span></div>
+        <div class="route-notice" id="route-notice" aria-live="polite"></div>
+        <aside class="mirror rear-mirror" aria-label="Rear-view mirror">
+          <canvas class="mirror-canvas" id="rear-mirror-canvas" aria-hidden="true"></canvas><span class="mirror-label" id="rear-mirror-label">REAR · CLEAR</span><div class="mirror-grid" aria-hidden="true"></div><div class="mirror-cars" id="rear-mirror-cars"></div>
+        </aside>
+        <aside class="debug-console" aria-label="NPC reaction debug console">
+          <div class="debug-console__header"><span>NPC REACTION LOG</span><small id="debug-turn">TURN 01 · READY</small></div>
+          <ol id="debug-log" class="debug-console__list"></ol>
+        </aside>
+        <div class="road">
+          <svg class="road-grid" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+            <path d="M3 100 L45 18 M34 100 L48 18 M66 100 L52 18 M97 100 L55 18" />
+            <path d="M11.7 83 H88.3 M19.4 68 H80.6 M26.6 54 H73.4 M32.2 43 H67.8 M36.8 34 H63.2 M40.4 27 H59.6 M43 22 H57" />
+          </svg>
+          <div class="player-token" id="player-token" aria-label="Player grid position"></div>
+          <div class="road-lines" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+          <div id="traffic" aria-label="Traffic ahead"></div>
+          <div class="player-lane-marker" id="player-marker" aria-hidden="true"></div>
+        </div>
+          <div class="road-copy" id="phase-label">CITY 1 <span id="turn-label">01 / 10</span></div>
+      </section>
+
+      <section class="cockpit">
+        <aside class="mirror left-mirror" aria-label="Left side mirror">
+          <canvas class="mirror-canvas" id="left-mirror-canvas" aria-hidden="true"></canvas><span class="mirror-label" id="left-mirror-label">LEFT MIRROR · CLEAR</span><div class="mirror-grid" aria-hidden="true"></div><div class="mirror-cars" id="left-mirror-cars"></div>
+        </aside>
+        <div class="dashboard">
+          <div class="hud-row">
+            <div><small>TRIP TIME</small><strong id="trip-time">00:00.0</strong></div>
+            <div class="decision"><small>DECISION</small><strong id="decision-time">5.0</strong><em>sec</em></div>
+            <div class="speed"><small>SPEED</small><strong id="speed">60</strong><em>km/h</em></div>
+            <div class="energy energy-gauge"><small>ENERGY</small><div class="energy-gauge__dial" id="energy-gauge" style="--energy-angle:240deg"><strong id="energy">80</strong><em>%</em></div></div>
+            <div class="lane"><small>LANE</small><strong id="lane-display">CENTER</strong><em>position</em></div>
+          </div>
+          <div class="steering-wheel" aria-hidden="true"><div></div></div>
+          <p id="status" role="status">Choose an action. Press 1–7.</p>
+          <div class="traffic-legend" aria-label="Traffic behavior guide">
+            <span class="blue">BLUE · slow</span><span class="red">RED · cuts in</span><span class="yellow">YELLOW · brakes</span><span class="green">GREEN · fast</span><span class="purple">PURPLE · no signal</span>
+          </div>
+        </div>
+        <aside class="mirror right-mirror" aria-label="Right side mirror">
+          <canvas class="mirror-canvas" id="right-mirror-canvas" aria-hidden="true"></canvas><span class="mirror-label" id="right-mirror-label">RIGHT MIRROR · CLEAR</span><div class="mirror-grid" aria-hidden="true"></div><div class="mirror-cars" id="right-mirror-cars"></div>
+        </aside>
+      </section>
+
+      <section class="action-bar" aria-label="Driving actions">
+        <button data-action="speed-up"><kbd>1</kbd><span>Speed Up</span><small>+20 km/h</small></button>
+        <button data-action="speed-down"><kbd>2</kbd><span>Speed Down</span><small>−20 km/h</small></button>
+        <button data-action="blink-left"><kbd>3</kbd><span>Left Blinker</span><small>signal</small></button>
+        <button data-action="blink-right"><kbd>4</kbd><span>Right Blinker</span><small>signal</small></button>
+        <button data-action="lane-left"><kbd>5</kbd><span>Lane Left</span><small>move</small></button>
+        <button data-action="lane-right"><kbd>6</kbd><span>Lane Right</span><small>move</small></button>
+        <button data-action="nothing"><kbd>7</kbd><span>Do Nothing</span><small>maintain</small></button>
+      </section>
+      <section class="failure-screen" id="failure-screen" aria-live="assertive" aria-labelledby="failure-title" hidden>
+        <div class="failure-screen__panel">
+          <p id="failure-kicker">RUN ENDED</p>
+          <h1 id="failure-title">CRASH</h1>
+          <p id="failure-reason">An NPC entered your path.</p>
+          <p class="failure-screen__hint">Read the blinkers, preserve a safe cell, and take the correct exit.</p>
+          <section class="crash-replay" id="crash-replay" aria-labelledby="replay-title" hidden>
+            <div class="crash-replay__head"><strong id="replay-title">TOP-DOWN RUN REPLAY</strong><span id="replay-turn">TURN 01</span></div>
+            <canvas id="crash-replay-canvas" width="380" height="214" aria-label="Top-down replay of the completed run"></canvas>
+            <div class="crash-replay__controls"><button id="replay-toggle" type="button">Pause replay</button><input id="replay-scrubber" type="range" min="0" max="0" value="0" aria-label="Replay turn" /></div>
+          </section>
+          <button id="restart-run" type="button">Restart run <kbd>R</kbd></button>
+        </div>
+      </section>
+    </main>
+    <script type="module" src="scene.js?v=34"></script>
+  <script src="game.js?v=42"></script>
+  </body>
+</html>
